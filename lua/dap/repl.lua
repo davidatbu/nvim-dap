@@ -219,6 +219,22 @@ function execute(text)
   end
 end
 
+---@param lines string[]
+---@return nil
+function M.evaluate(lines)
+  local buf = repl._init_buf()
+  
+  -- print the text first
+  local last_lnum = vim.api.nvim_buf_line_count(buf)
+  vim.api.nvim_buf_set_lines(buf, last_lnum, last_lnum, false, lines)
+
+  -- Do the execute
+  local session = get_session()
+  session:evaluate(table.concat(lines, "\n"), evaluate_handler)
+
+  -- Scroll to the end
+  vim.api.nvim_win_set_cursor(repl.win, { vim.api.nvim_buf_line_count(buf), 0})
+end
 
 --- Close the REPL if it is open.
 --
